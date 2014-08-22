@@ -1,0 +1,214 @@
+# Moduliai reikalingi programai:
+
+import math
+import os
+
+# Skaiciuoja krypti ir atstuma iki taikinio:
+
+class Calculate(object):
+
+        def angle(self, tx, ty, lx, ly):                
+                if (lx - tx) > 0:
+                        return ((math.acos( (ly-ty) / (((lx-tx)**2)+((ly-ty)**2))**0.5 )) * (3200 / math.pi))
+                elif (lx - tx) < 0:
+                        return (3200 - ((math.acos( (ly - ty) / (((lx - tx)**2)+((ly - ty)**2))**0.5 )) * (3200 / math.pi)) + 3200)
+                else:
+                        return ((math.acos( (ly-ty) / (((lx-tx)**2)+((ly-ty)**2))**0.5 )) * (3200 / math.pi))
+
+        def magnitude(self, lx, ly, tx, ty):
+                return 10*float((((lx - tx)**2)+((ly - ty)**2))**0.5)
+
+	def sutelkta(tarpas, atstumas):
+		return (tarpas / atstumas) * 0.001
+		
+	def isskleista(frontas, atstumas):
+		return (frontas / (5 * atstumas)) * 0.01
+
+# Tai klase nustatanti stebetoju buvimo vieta ir ju taikini:
+
+class SeekersNest(object):
+
+	
+	def __init__(self, x, y, vector, magnitude):
+		self.x = float(x)
+		self.y = float(y)
+		self.vector = float(vector)
+		self.magnitude = float(magnitude) / 10
+		
+		if vector == 6400 or vector == 3200:
+			self.targetx = float(0)
+			self.tarx = x
+
+                if vector != 6400 and vector !=3200:
+			self.targetx = float((magnitude * math.sin((vector  + 154) * (math.pi / 3200))))
+			self.tarx = float(((magnitude / 10) * math.sin((vector + 154) * (math.pi / 3200)))) + x
+
+		if vector == 1600 or vector == 4800:
+			self.targety = float(0)
+			self.tary = y
+                
+                if vector != 1600 and vector !=4800:
+			self.targety = float((magnitude * math.cos((vector + 154) * (math.pi / 3200))))
+			self.tary = float(((magnitude / 10) * math.cos((vector + 154) * (math.pi / 3200)))) + y
+	
+	def  kairiau(self, kiek):
+		
+		self.vector = (math.atan2((kiek / 10), self.magnitude) * (3200 / math.pi)) + ((math.atan2(self.targety, self.targetx)) * (3200 / math.pi))
+
+		if self.vector == 6400 or self.vector == 3200:
+			self.targetx = 0
+			self.tarx = self.x
+
+                if self.vector != 6400 and self.vector !=3200:
+			self.targetx = float((self.magnitude * math.sin(self.vector * (math.pi / 3200))))
+			self.tarx = float((self.magnitude * math.sin(self.vector * (math.pi / 3200)))) + self.x
+		     
+		if self.vector == 1600 or self.vector == 4800:
+			self.targety = 0
+			self.tary= self.y
+                
+                if self.vector != 1600 and self.vector !=4800:
+			self.targety = float((self.magnitude * math.cos(self.vector * (math.pi / 3200))))
+			self.tary = float((self.magnitude * math.cos(self.vector * (math.pi / 3200)))) + self.y
+
+	
+	def desiniau(self, kiek):
+		
+		self.vector = (math.atan2(self.targety, self.targetx) * (3200 / math.pi)) - ((math.atan2((kiek / 10), self.magnitude)) * (3200 / math.pi))
+
+		if self.vector == 6400 or self.vector == 3200:
+                    self.targetx = 0
+		    self.tarx = self.x
+
+                if self.vector != 6400 and self.vector !=3200:
+                     self.targetx = float((self.magnitude * math.sin(self.vector * (math.pi / 3200))))
+		     self.tarx = float((self.magnitude * math.sin(self.vector * (math.pi / 3200)))) + self.x
+		     
+		if self.vector == 1600 or self.vector == 4800:
+                    self.targety = 0
+		    self.tary = self.y
+                
+                if self.vector != 1600 and self.vector !=4800:
+                    self.targety = float((self.magnitude * math.cos(self.vector * (math.pi / 3200))))
+		    self.tary = float((self.magnitude * math.cos(self.vector * (math.pi / 3200)))) + self.y
+	def plius(self, kiek):
+	
+		self.magnitude = self.magnitude + (kiek / 10)
+		
+		if self.vector == 6400 or self.vector == 3200 or self.vector == 0:
+                    self.targetx = 0
+		    self.tarx = self.x
+
+                if self.vector != 6400 and self.vector !=3200 and self.vector != 0:
+                     self.targetx = float((self.magnitude * math.sin(self.vector * (math.pi / 3200))))
+		     self.tarx = float((self.magnitude * math.sin(self.vector * (math.pi / 3200)))) + self.x
+		     
+		if self.vector == 1600 or self.vector == 4800:
+                    self.targety = 0
+		    self.tary = self.y
+                
+                if self.vector != 1600 and self.vector !=4800:
+                    self.targety = float((self.magnitude * math.cos(self.vector * (math.pi / 3200))))
+		    self.tary = float((self.magnitude * math.cos(self.vector * (math.pi / 3200)))) + self.y
+		
+	def minus(self, kiek):
+	
+		self.magnitude = self.magnitude - (kiek / 10)
+		
+		if self.vector == 6400 or self.vector == 3200 or self.vector == 0:
+                    self.targetx = 0
+		    self.tarx = self.x
+
+                if self.vector != 6400 and self.vector !=3200 and self.vector != 0:
+                     self.targetx = float((self.magnitude * math.sin(self.vector * (math.pi / 3200))))
+		     self.tarx = float((self.magnitude * math.sin(self.vector * (math.pi / 3200)))) + self.x
+		     
+		if self.vector == 1600 or self.vector == 4800:
+                    self.targety = 0
+		    self.tary = self.y
+                
+                if self.vector != 1600 and self.vector !=4800:
+                    self.targety = float((self.magnitude * math.cos(self.vector * (math.pi / 3200))))
+		    self.tary = float((self.magnitude * math.cos(self.vector * (math.pi / 3200)))) + self.y
+
+
+# Klase reikalinga valdyti duombaze
+
+class DatabaseManage(object):
+	
+	def extract(self,db, m):
+		txtFile = open(db, "r")
+		mag = str(m) + ' '
+		for line in txtFile:
+			if mag in line:
+				return str(line.strip( ' \n' ).replace(mag, ''))
+			else:
+				return 0
+
+# Klase, apvalinanti skaiciu iki 25 dalies ir grazinanti tarpa kuriame randasi apvalinamas skaicius			
+
+class NumbRound(object):
+
+	def __init__(self, number):
+		self.numb = number
+		self.rounded = int(round(round(number)/25) * 25)
+		self.hundred = round(number/100) * 100
+
+	def higher(self):
+		
+		if self.rounded > self.numb:
+			return self.rounded
+
+		elif self.rounded < self.numb:
+			return self.rounded + 25
+		
+	def lower(self):
+		
+		if self.rounded > self.numb:
+			return self.rounded - 25
+		
+		elif self.rounded < self.numb:
+			return self.rounded
+
+	
+# Programa:
+
+import npyscreen
+
+
+class MainForm(npyscreen.FormBaseNew):
+	
+
+	def create(self):
+		self.atstumas = self.add(npyscreen.TitleText, name = 'Atstumas:', value = '1', relx = 8, rely = 3, max_width=20)
+		
+	def while_editing(self, arg):
+
+		ob = SeekersNest(float(self.stebx.get_value()), float(self.steby.get_value()), float(self.kryptis.get_value()), float(self.atstumas.get_value()))
+		db = DatabaseManage()
+		calc= Calculate()
+		self.rodatstumas.value =  int(calc.magnitude(float(self.koordx.get_value()), float(self.koordy.get_value()), float(ob.tarx), float(ob.tary)))
+		self.rodkoord.value = int(ob.tarx), int(ob.tary)
+		self.display()
+		minx = self.koordx.get_value()
+		miny = self.koordy.get_value()
+		self.rnd = NumbRound(self.rodatstumas.get_value())
+		# Nustato uztaisa programai
+		
+		
+
+		
+		# Rodo informacija duomenu skiltyj
+		
+class MyApplication(npyscreen.NPSAppManaged):
+	
+	store_value = True
+	keypress_timeout_default = 1
+	check_value_change = False
+	def onStart(self):
+		N = self.addForm('MAIN', MainForm, name= 'Tampella 120mm')	
+		N.edit()
+
+	
+if __name__ == '__main__':
+	App = MyApplication().run()
